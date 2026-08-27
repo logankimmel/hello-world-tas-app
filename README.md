@@ -1,37 +1,34 @@
-# hello-world-tas-app — boot-2.7.35-enterprise
+# hello-world-tas-app — docker-container-image
 
-Spring Boot **2.7.35**, pulled from Broadcom's commercial Spring Enterprise Maven repository — the current entitled patch, fully in support.
+Same entitled Spring Boot 2.7.35 code as `boot-2.7.35-enterprise`, but built as a **container image** and pushed to Cloud Foundry via the docker lifecycle instead of a buildpack.
 
 Part of a multi-branch demo showing how different Spring Boot versions and CF deployment lifecycles show up in Tanzu Hub. See `main` for the full branch map.
 
-## Building this branch
+## The point of this branch
 
-This branch's `pom.xml` imports `spring-boot-dependencies` from Broadcom's Spring Enterprise repo instead of Maven Central, so you need your own entitlement:
+This app is fully patched and in support — but Tanzu Hub's Vulnerability Insights **will not show it**. Hub's per-app vulnerability linkage is built on the app-to-buildpack relationship that only exists for CF's buildpack lifecycle. A docker-lifecycle app is just an opaque OCI image to Cloud Foundry, so there's no relationship for Hub to key off of, regardless of how well-maintained the image actually is.
 
-1. Generate a Registry Token from the Broadcom Support Portal (My Downloads > Registry Tokens). Requires a Tanzu Spring Enterprise entitlement.
-2. Add credentials to `~/.m2/settings.xml`:
+## Building and pushing the image
 
-   ```xml
-   <servers>
-     <server>
-       <id>spring-enterprise-subscription</id>
-       <username>YOUR_SUPPORT_PORTAL_EMAIL</username>
-       <password>YOUR_REGISTRY_TOKEN</password>
-     </server>
-     <server>
-       <id>spring-enterprise-dependencies</id>
-       <username>YOUR_SUPPORT_PORTAL_EMAIL</username>
-       <password>YOUR_REGISTRY_TOKEN</password>
-     </server>
-   </servers>
-   ```
+Requires the same Broadcom Spring Enterprise credentials as `boot-2.7.35-enterprise` (see that branch's README), available during the Docker build via a BuildKit secret:
 
-3. `mvn clean package`
+```
+docker buildx build --secret id=mvn_settings,src="$HOME/.m2/settings.xml" \
+  --platform linux/amd64 \
+  -t <your-registry>/hello-world-tas-app:latest \
+  --push .
+```
+
+`--platform linux/amd64` matters — CF cells run amd64, so build for that even from an Apple Silicon Mac.
 
 ## Deploying
 
 ```
-cf push hello-world-tas-app-2-7-enterprise -f manifest.yml --random-route
+cf push hello-world-tas-app-docker --no-manifest \
+  -o <your-registry>/hello-world-tas-app:latest \
+  --random-route -m 1G -i 1 -u http --endpoint /actuator/health
 ```
 
-In Tanzu Hub, this app shows 0 out-of-enterprise-support libraries and no vulnerabilities requiring an upgrade.
+Note `--no-manifest` — `manifest.yml` in this repo specifies buildpacks, which conflicts with `--docker-image`.
+
+The container runs as a non-root user (required by CF) — see the `Dockerfile`.
