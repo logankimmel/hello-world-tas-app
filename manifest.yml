@@ -8,5 +8,6 @@ applications:
   - java_buildpack_offline
   health-check-type: http
   health-check-http-endpoint: /actuator/health
+  health-check-invocation-timeout: 10
   env:
     JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 17.+ } }'
