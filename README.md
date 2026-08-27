@@ -1,37 +1,26 @@
-# hello-world-tas-app — boot-2.7.35-enterprise
+# hello-world-tas-app
 
-Spring Boot **2.7.35**, pulled from Broadcom's commercial Spring Enterprise Maven repository — the current entitled patch, fully in support.
+Simple Spring Boot "Hello World" app for Tanzu Platform / Cloud Foundry — used as a demo of how different Spring Boot versions and CF deployment lifecycles show up in Tanzu Hub's Vulnerability Insights.
 
-Part of a multi-branch demo showing how different Spring Boot versions and CF deployment lifecycles show up in Tanzu Hub. See `main` for the full branch map.
+`main` tracks the recommended state: Spring Boot 2.7.35 from Broadcom's Spring Enterprise repo, buildpack lifecycle.
 
-## Building this branch
+## Branches
 
-This branch's `pom.xml` imports `spring-boot-dependencies` from Broadcom's Spring Enterprise repo instead of Maven Central, so you need your own entitlement:
+| Branch | Spring Boot | Lifecycle | What it demonstrates |
+|---|---|---|---|
+| `legacy-boot-1.5.9` | 1.5.9.RELEASE | buildpack | Ancient release: 0 OSS/enterprise support remaining, high upgrade effort, real CVEs |
+| `boot-2.7.18-oss` | 2.7.18 (public) | buildpack | Last public OSS release: out of enterprise support despite looking "recent" |
+| `boot-2.7.35-enterprise` (= `main`) | 2.7.35 (entitled) | buildpack | Current entitled patch from Broadcom's Spring Enterprise repo: fully in support |
+| `docker-container-image` | 2.7.35 (entitled) | docker (`cf push --docker-image`) | Same supported code, but invisible to Tanzu Hub's Vulnerability Insights — no buildpack relationship for Hub to key off of |
 
-1. Generate a Registry Token from the Broadcom Support Portal (My Downloads > Registry Tokens). Requires a Tanzu Spring Enterprise entitlement.
-2. Add credentials to `~/.m2/settings.xml`:
+## Deployed apps (Cloud Foundry: `tanzu-hub.kuhn-labs.com`)
 
-   ```xml
-   <servers>
-     <server>
-       <id>spring-enterprise-subscription</id>
-       <username>YOUR_SUPPORT_PORTAL_EMAIL</username>
-       <password>YOUR_REGISTRY_TOKEN</password>
-     </server>
-     <server>
-       <id>spring-enterprise-dependencies</id>
-       <username>YOUR_SUPPORT_PORTAL_EMAIL</username>
-       <password>YOUR_REGISTRY_TOKEN</password>
-     </server>
-   </servers>
-   ```
+- `hello-world-tas-app` — `boot-2.7.18-oss`
+- `hello-world-tas-app-2-7-enterprise` — `boot-2.7.35-enterprise`
+- `hello-world-tas-app-docker` — `docker-container-image`
 
-3. `mvn clean package`
+See [`docs/architecture.png`](docs/architecture.png) for the full build → deploy → Hub-visibility picture across all three.
 
-## Deploying
+## Building the enterprise branches
 
-```
-cf push hello-world-tas-app-2-7-enterprise -f manifest.yml --random-route
-```
-
-In Tanzu Hub, this app shows 0 out-of-enterprise-support libraries and no vulnerabilities requiring an upgrade.
+`boot-2.7.35-enterprise` and `docker-container-image` pull from Broadcom's commercial Spring Enterprise Maven repository, which requires your own entitled Broadcom Support Portal registry token — see each branch's README for setup. `boot-2.7.18-oss` and `legacy-boot-1.5.9` build from public Maven Central only, no entitlement needed.
