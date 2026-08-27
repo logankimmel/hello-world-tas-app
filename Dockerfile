@@ -2,8 +2,7 @@ FROM maven:3.9-eclipse-temurin-8 AS build
 WORKDIR /workspace
 COPY pom.xml .
 COPY src src
-RUN --mount=type=secret,id=mvn_settings,target=/root/.m2/settings.xml \
-    mvn -q -Dmaven.test.skip=true package
+RUN mvn -q -Dmaven.test.skip=true package
 
 FROM eclipse-temurin:8-jre
 WORKDIR /app
