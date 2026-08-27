@@ -4,22 +4,32 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.9.RELEASE</version>
-        <relativePath/>
-    </parent>
-
     <groupId>com.example</groupId>
     <artifactId>hello-world-tas-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
     <name>hello-world-tas-app</name>
     <description>Simple Spring Boot Hello World app for Tanzu Platform / Cloud Foundry</description>
 
     <properties>
         <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring-boot.version>2.7.35</spring-boot.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -39,14 +49,38 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>spring-enterprise-subscription</id>
+            <url>https://packages.broadcom.com/artifactory/spring-enterprise/</url>
+        </repository>
+        <repository>
+            <id>spring-enterprise-dependencies</id>
+            <url>https://packages.broadcom.com/artifactory/tanzu-spring-dependencies/</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-enterprise-subscription</id>
+            <url>https://packages.broadcom.com/artifactory/spring-enterprise/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>spring-enterprise-dependencies</id>
+            <url>https://packages.broadcom.com/artifactory/tanzu-spring-dependencies/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
                 <executions>
                     <execution>
                         <goals>
+                            <goal>repackage</goal>
                             <goal>build-info</goal>
                         </goals>
                     </execution>
