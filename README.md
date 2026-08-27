@@ -1,26 +1,25 @@
-# hello-world-tas-app
+# hello-world-tas-app — boot-2.7.18-oss
 
-Simple Spring Boot "Hello World" app for Tanzu Platform / Cloud Foundry — used as a demo of how different Spring Boot versions and CF deployment lifecycles show up in Tanzu Hub's Vulnerability Insights.
+Spring Boot **2.7.18** — the last version published to public Maven Central before Spring Boot 2.7's open-source support window closed (Nov 2023). No Broadcom entitlement needed to build this branch.
 
-`main` tracks the recommended state: Spring Boot 2.7.35 from Broadcom's Spring Enterprise repo, buildpack lifecycle.
+Part of a multi-branch demo showing how different Spring Boot versions and CF deployment lifecycles show up in Tanzu Hub. See `main` for the full branch map.
 
-## Branches
+## The point of this branch
 
-| Branch | Spring Boot | Lifecycle | What it demonstrates |
-|---|---|---|---|
-| `legacy-boot-1.5.9` | 1.5.9.RELEASE | buildpack | Ancient release: 0 OSS/enterprise support remaining, high upgrade effort, real CVEs |
-| `boot-2.7.18-oss` | 2.7.18 (public) | buildpack | Last public OSS release: out of enterprise support despite looking "recent" |
-| `boot-2.7.35-enterprise` (= `main`) | 2.7.35 (entitled) | buildpack | Current entitled patch from Broadcom's Spring Enterprise repo: fully in support |
-| `docker-container-image` | 2.7.35 (entitled) | docker (`cf push --docker-image`) | Same supported code, but invisible to Tanzu Hub's Vulnerability Insights — no buildpack relationship for Hub to key off of |
+This looks like a reasonably current version at a glance, but it's actually 0 years remaining on enterprise support — every patch since 2.7.18 (2.7.19 onward) shipped only to Broadcom's commercial Spring Enterprise repository, not to public Maven Central. In Tanzu Hub, this shows up as "Out Of Enterprise Support" despite the app looking healthy.
 
-## Deployed apps (Cloud Foundry: `tanzu-hub.kuhn-labs.com`)
+Compare against `boot-2.7.35-enterprise`, which is the same minor version line pulled from the entitled repo instead.
 
-- `hello-world-tas-app` — `boot-2.7.18-oss`
-- `hello-world-tas-app-2-7-enterprise` — `boot-2.7.35-enterprise`
-- `hello-world-tas-app-docker` — `docker-container-image`
+## Building this branch
 
-See [`docs/architecture.png`](docs/architecture.png) for the full build → deploy → Hub-visibility picture across all three.
+```
+mvn clean package
+```
 
-## Building the enterprise branches
+No special repository configuration needed — everything resolves from Maven Central.
 
-`boot-2.7.35-enterprise` and `docker-container-image` pull from Broadcom's commercial Spring Enterprise Maven repository, which requires your own entitled Broadcom Support Portal registry token — see each branch's README for setup. `boot-2.7.18-oss` and `legacy-boot-1.5.9` build from public Maven Central only, no entitlement needed.
+## Deploying
+
+```
+cf push hello-world-tas-app -f manifest.yml --random-route
+```
