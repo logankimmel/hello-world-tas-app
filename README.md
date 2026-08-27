@@ -1,26 +1,27 @@
-# hello-world-tas-app
+# hello-world-tas-app — boot-4.1.1-oss
 
-Simple Spring Boot "Hello World" app for Tanzu Platform / Cloud Foundry — used as a demo of how different Spring Boot versions and CF deployment lifecycles show up in Tanzu Hub's Vulnerability Insights.
+Spring Boot **4.1.1** — the latest public OSS release as of this writing (4.2.0-M1 exists but is a pre-release milestone, not GA). No Broadcom entitlement needed to build this branch.
 
-`main` tracks the recommended state: Spring Boot 2.7.35 from Broadcom's Spring Enterprise repo, buildpack lifecycle.
+Part of a multi-branch demo showing how different Spring Boot versions and CF deployment lifecycles show up in Tanzu Hub. See `main` for the full branch map.
 
-## Branches
+## What's different from the 2.7.x branches
 
-| Branch | Spring Boot | Lifecycle | What it demonstrates |
-|---|---|---|---|
-| `legacy-boot-1.5.9` | 1.5.9.RELEASE | buildpack | Ancient release: 0 OSS/enterprise support remaining, high upgrade effort, real CVEs |
-| `boot-2.7.18-oss` | 2.7.18 (public) | buildpack | Last public OSS release: out of enterprise support despite looking "recent" |
-| `boot-2.7.35-enterprise` (= `main`) | 2.7.35 (entitled) | buildpack | Current entitled patch from Broadcom's Spring Enterprise repo: fully in support |
-| `docker-container-image` | 2.7.35 (entitled) | docker (`cf push --docker-image`) | Same supported code, but invisible to Tanzu Hub's Vulnerability Insights — no buildpack relationship for Hub to key off of |
+Spring Boot 4 (Spring Framework 7) requires **Java 17+** (this app targets 17) and heavily modularized what used to be monolithic starters. Notably, `AutoConfigureMockMvc` moved out of `spring-boot-test-autoconfigure` into a new dedicated module, `spring-boot-webmvc-test` (package `org.springframework.boot.webmvc.test.autoconfigure`) — that's an extra test-scope dependency this branch has that the 2.7.x branches don't need.
 
-## Deployed apps (Cloud Foundry: `tanzu-hub.kuhn-labs.com`)
+## The point of this branch
 
-- `hello-world-tas-app` — `boot-2.7.18-oss`
-- `hello-world-tas-app-2-7-enterprise` — `boot-2.7.35-enterprise`
-- `hello-world-tas-app-docker` — `docker-container-image`
+This is "as current as it gets" on the public OSS side — useful as the upper reference point against the other branches' support-status stories in Tanzu Hub.
 
-See [`docs/architecture.png`](docs/architecture.png) for the full build → deploy → Hub-visibility picture across all three.
+## Building this branch
 
-## Building the enterprise branches
+```
+mvn clean package
+```
 
-`boot-2.7.35-enterprise` and `docker-container-image` pull from Broadcom's commercial Spring Enterprise Maven repository, which requires your own entitled Broadcom Support Portal registry token — see each branch's README for setup. `boot-2.7.18-oss` and `legacy-boot-1.5.9` build from public Maven Central only, no entitlement needed.
+No special repository configuration needed — everything resolves from Maven Central.
+
+## Deploying
+
+```
+cf push hello-world-tas-app-4-1-oss -f manifest.yml --random-route
+```
