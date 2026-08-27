@@ -12,12 +12,14 @@ Simple Spring Boot "Hello World" app for Tanzu Platform / Cloud Foundry — used
 | `boot-2.7.18-oss` | 2.7.18 (public) | buildpack | Last public OSS release: out of enterprise support despite looking "recent" |
 | `boot-2.7.35-enterprise` (= `main`) | 2.7.35 (entitled) | buildpack | Current entitled patch from Broadcom's Spring Enterprise repo: fully in support |
 | `docker-container-image` | 2.7.35 (entitled) | docker (`cf push --docker-image`) | Same supported code, but invisible to Tanzu Hub's Vulnerability Insights — no buildpack relationship for Hub to key off of |
+| `boot-4.1.1-oss` | 4.1.1 (public, latest) | buildpack | Latest public OSS release, Java 17+ baseline, heavily modularized test starters |
 
 ## Deployed apps (Cloud Foundry: `tanzu-hub.kuhn-labs.com`)
 
 - `hello-world-tas-app` — `boot-2.7.18-oss`
 - `hello-world-tas-app-2-7-enterprise` — `boot-2.7.35-enterprise`
 - `hello-world-tas-app-docker` — `docker-container-image`
+- `hello-world-tas-app-4-1-oss` — `boot-4.1.1-oss`
 
 See [`docs/architecture.png`](docs/architecture.png) for the full build → deploy → Hub-visibility picture across all three.
 
